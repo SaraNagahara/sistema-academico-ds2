@@ -33,6 +33,9 @@ const AlunoView = {
         AlunoView.elementos.saidaJson =
             document.getElementById("saida-json");
 
+        AlunoView.elementos.botaoLimpar =
+            document.getElementById("btn-limpar-dados");
+
     },
 
     configurarFormulario(aoEnviar){
@@ -48,6 +51,15 @@ const AlunoView = {
     );
     },
 
+    configurarBotaoLimpar(aoLimpar){
+        AlunoView.elementos.botaoLimpar.addEventListener(
+            "click",
+            function(){
+                aoLimpar();
+            }
+        );
+    },
+
     lerDados(){
         return{
             ra: AlunoView.elementos.ra.value,
@@ -56,6 +68,10 @@ const AlunoView = {
             curso: AlunoView.elementos.curso.value,
             turma: AlunoView.elementos.turma.value
         };
+    },
+
+    confirmarLimpeza(){
+        return confirm("Deseja remover todos os alunos cadastrados?");
     },
 
     exibirSucesso(mensagem){
