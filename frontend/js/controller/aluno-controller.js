@@ -2,34 +2,45 @@ const AlunoController = {
 
 
     iniciar(){
-        let continuar = true;
+       AlunoView.inicializar();
 
-        while(continuar){ 
+       AlunoView.configurarFormulario(
+        function(dados){
+            AlunoController.cadastrar(dados)
+        }
+    );
 
-            const dados = AlunoView.lerDados();
+    AlunoController.atualizarVisualizacao();
 
-            const resultado = AlunoModel.cadastrar(dados);
+    },
 
-            if(resultado.sucesso){
-                AlunoView.exibirAluno(resultado.aluno);
-            }else{
-                AlunoView.exibirErro(resultado.mensagem);
-            }
+    corrigeMaiusculoEMinusculo(nome){
+        return nome.charAt(0).toUpperCase() + nome.slice(1).toLowerCase();
+    },
 
-            continuar = AlunoView.perguntarNovoCadastro();
+    cadastrar(dados){
+        const resultado = AlunoModel.cadastrar(dados);
+
+        if(!resultado.sucesso){
+            AlunoView.exibirErro(resultado.mensagem);
+            return;
         }
 
-        const alunos = AlunoModel.listar();
+        AlunoView.exibirSucesso(`Aluno ${this.corrigeMaiusculoEMinusculo(resultado.aluno.nome)} cadastrado com sucesso!`);
+
+        AlunoView.limparFormulario();
+
+        AlunoController.atualizarVisualizacao();
+    },
+
+    atualizarVisualizacao(){
+        const alunos = AlunoModel.listar(); 
 
         AlunoView.exibirLista(alunos);
 
         const textoJson = JSON.stringify(alunos, null, 2);
 
         AlunoView.exibirJson(textoJson);
-
-        const dadosRecuperados = JSON.parse(textoJson);
-
-        AlunoView.exibirDadosRecuperados(dadosRecuperados);
     }
 };
 
