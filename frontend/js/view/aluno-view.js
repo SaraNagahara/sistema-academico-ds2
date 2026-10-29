@@ -2,61 +2,45 @@ const AlunoView = {
 
     elementos: {},
 
-    inicializar(){
+    iniciar(){
         AlunoView.elementos.formulario = 
-            document.getElementById("form-aluno");
-
+            document.querySelector("#form-aluno");
         AlunoView.elementos.ra =
-            document.getElementById("ra");
+            document.querySelector("#ra");
 
         AlunoView.elementos.nome =
-            document.getElementById("nome");
+            document.querySelector("#nome");
 
         AlunoView.elementos.email =
-            document.getElementById("email");
+            document.querySelector("#email");
         
         AlunoView.elementos.curso =
-            document.getElementById("curso");
+            document.querySelector("#curso");
 
         AlunoView.elementos.turma =
-            document.getElementById("turma");
+            document.querySelector("#turma");
         
         AlunoView.elementos.mensagem =
-            document.getElementById("mensagem");
+            document.querySelector("#mensagem");
         
         AlunoView.elementos.corpoTabela =
-            document.getElementById("corpo-tabela-alunos");
+            document.querySelector("#corpo-tabela-alunos");
 
         AlunoView.elementos.totalAlunos =
-            document.getElementById("total-alunos");
+            document.querySelector("#total-alunos");
 
         AlunoView.elementos.saidaJson =
-            document.getElementById("saida-json");
+            document.querySelector("#saida-json");
 
-        AlunoView.elementos.botaoLimpar =
-            document.getElementById("btn-limpar-dados");
+        AlunoView.elementos.botaoSalvar =
+            document.querySelector("#botao-salvar");
 
     },
 
     configurarFormulario(aoEnviar){
         AlunoView.elementos.formulario.addEventListener(
             "submit", 
-            function(evento){
-            evento.preventDefault();
-
-            const dados = AlunoView.lerDados();
-
-            aoEnviar(dados);
-        }
-    );
-    },
-
-    configurarBotaoLimpar(aoLimpar){
-        AlunoView.elementos.botaoLimpar.addEventListener(
-            "click",
-            function(){
-                aoLimpar();
-            }
+            aoEnviar
         );
     },
 
@@ -66,22 +50,78 @@ const AlunoView = {
             nome: AlunoView.elementos.nome.value,
             email: AlunoView.elementos.email.value,
             curso: AlunoView.elementos.curso.value,
-            turma: AlunoView.elementos.turma.value
+            turma: AlunoView.elementos.turma.value,
         };
     },
 
-    confirmarLimpeza(){
-        return confirm("Deseja remover todos os alunos cadastrados?");
+    exibirMensagem(mensagem, tipo){
+        AlunoView.elementos.mensagem.textContent = mensagem;
+
+        AlunoView.elementos.mensagem.className = `mensagem ${tipo}`;
     },
 
-    exibirSucesso(mensagem){
-        AlunoView.elementos.mensagem.textContent = mensagem;
-        AlunoView.elementos.mensagem.className = "mensagem-sucesso";
+    criaCelula(valor){
+        const celula = document.createElement("td");
+        
+        celula.textContent = valor;
+
+        return celula;
     },
 
-    exibirErro(mensagem){
-        AlunoView.elementos.mensagem.textContent = mensagem;
-        AlunoView.elementos.mensagem.className = "mensagem-erro";
+    exibirLista(alunos){
+        AlunoView.elementos.corpoTabela.innerHTML = "";
+
+        if(alunos.length === 0){
+            const linha = document.createElement("tr");
+            const celula = document.createElement("td");
+
+            celula.colSpan = 7;
+            celula.textContent = "Nenhum aluno foi cadastrado.";
+
+            linha.appendChild(celula);
+
+            AlunoView.elementos.corpoTabela.appendChild(
+                linha
+            );
+
+            return;
+        }
+
+        alunos.forEach(aluno =>{
+            const linha = document.createElement("tr");
+
+            linha.appendChild(
+                AlunoView.criaCelula(aluno.id)
+            );
+            linha.appendChild(
+                AlunoView.criaCelula(aluno.ra)
+            );
+            linha.appendChild(
+                AlunoView.criaCelula(aluno.nome)
+            );
+            linha.appendChild(
+                AlunoView.criaCelula(aluno.email)
+            );
+            linha.appendChild(
+                AlunoView.criaCelula(aluno.curso)
+            );
+            linha.appendChild(
+                AlunoView.criaCelula(aluno.turma)
+            );
+            linha.appendChild(
+                AlunoView.criaCelula(
+                    aluno.ativo ? "Sim" : "Não"
+                )
+            );
+
+            AlunoView.elementos.corpoTabela.appendChild(
+                linha
+            );
+        });
+    },
+
+    exibirJson(alunos){
+        AlunoView.elementos.saidaJson.textContent = JSON.stringify(alunos, null, 2);
     },
 
     limparFormulario(){
@@ -90,52 +130,98 @@ const AlunoView = {
         AlunoView.elementos.ra.focus();
     },
 
-    exibirLista(alunos){
-        const corpoTabela = AlunoView.elementos.corpoTabela;
-        corpoTabela.textContent = "";
+    alterarEstadoFormulario(processando) {
+        AlunoView.elementos.botaoSalvar.disabled = processando;
+        AlunoView.elementos.botaoSalvar.textContent = processando ? "Salvando..." : "Cadastrar aluno";
+    },
 
-        AlunoView.elementos.totalAlunos.textContent = 
-            `Total: ${alunos.length}`;
+    //codigo antigo ??
 
-            if(alunos.length === 0){
-                const linha = document.createElement("tr");
-                const celula = document.createElement("td");
-                celula.colSpan = 7;
-                celula.textContent = 
-                    "Nenhum aluno foi cadastrado.";
-                linha.appendChild(celula);
-                corpoTabela.appendChild(linha);
+    // configurarBotaoLimpar(aoLimpar){
+    //     AlunoView.elementos.botaoLimpar.addEventListener(
+    //         "click",
+    //         function(){
+    //             aoLimpar();
+    //         }
+    //     );
+    // },
 
-                return;
-            }
+    // lerDados(){
+    //     return{
+    //         ra: AlunoView.elementos.ra.value,
+    //         nome: AlunoView.elementos.nome.value,
+    //         email: AlunoView.elementos.email.value,
+    //         curso: AlunoView.elementos.curso.value,
+    //         turma: AlunoView.elementos.turma.value
+    //     };
+    // },
 
-            alunos.forEach(function(aluno){
+    // confirmarLimpeza(){
+    //     return confirm("Deseja remover todos os alunos cadastrados?");
+    // },
+
+    // exibirSucesso(mensagem){
+    //     AlunoView.elementos.mensagem.textContent = mensagem;
+    //     AlunoView.elementos.mensagem.className = "mensagem-sucesso";
+    // },
+
+    // exibirErro(mensagem){
+    //     AlunoView.elementos.mensagem.textContent = mensagem;
+    //     AlunoView.elementos.mensagem.className = "mensagem-erro";
+    // },
+
+    // limparFormulario(){
+    //     AlunoView.elementos.formulario.reset();
+
+    //     AlunoView.elementos.ra.focus();
+    // },
+
+    // exibirLista(alunos){
+    //     const corpoTabela = AlunoView.elementos.corpoTabela;
+    //     corpoTabela.textContent = "";
+
+    //     AlunoView.elementos.totalAlunos.textContent = 
+    //         `Total: ${alunos.length}`;
+
+    //         if(alunos.length === 0){
+    //             const linha = document.createElement("tr");
+    //             const celula = document.createElement("td");
+    //             celula.colSpan = 7;
+    //             celula.textContent = 
+    //                 "Nenhum aluno foi cadastrado.";
+    //             linha.appendChild(celula);
+    //             corpoTabela.appendChild(linha);
+
+    //             return;
+    //         }
+
+    //         alunos.forEach(function(aluno){
       
-                const linha = document.createElement("tr");
+    //             const linha = document.createElement("tr");
 
-                const valores = [
-                    aluno.id,
-                    aluno.ra,
-                    aluno.nome,
-                    aluno.email,
-                    aluno.curso,
-                    aluno.turma,
+    //             const valores = [
+    //                 aluno.id,
+    //                 aluno.ra,
+    //                 aluno.nome,
+    //                 aluno.email,
+    //                 aluno.curso,
+    //                 aluno.turma,
 
-                    aluno.ativo ? "Ativo" : "Inativo"
-                ];
+    //                 aluno.ativo ? "Ativo" : "Inativo"
+    //             ];
 
-                valores.forEach(function(valor){
-                    const celula = document.createElement("td");
-                    celula.textContent = valor;
-                    linha.appendChild(celula);
-                });
-                corpoTabela.appendChild(linha);
+    //             valores.forEach(function(valor){
+    //                 const celula = document.createElement("td");
+    //                 celula.textContent = valor;
+    //                 linha.appendChild(celula);
+    //             });
+    //             corpoTabela.appendChild(linha);
     
-            });
-            },
+    //         });
+    //         },
 
-            exibirJson(textoJson){
-                AlunoView.elementos.saidaJson.textContent = textoJson;
-            }
+    //         exibirJson(textoJson){
+    //             AlunoView.elementos.saidaJson.textContent = textoJson;
+    //         }
 
 };

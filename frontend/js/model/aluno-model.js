@@ -10,38 +10,23 @@ const AlunoModel = {
         return email.includes("@") && email.includes(".");
     },
 
-    localizarPorRa(alunos, ra){
-        return alunos.find(
-            aluno => aluno.ra === ra
-        );
-    },
+    validar(dados){
+        const aluno = {
+            ra: AlunoModel.normalizarTexto(dados.ra),
+            nome: AlunoModel.normalizarTexto(dados.nome),
 
-    gerarProximoId(alunos){
-        if(alunos.length === 0){
-            return 1;
-        }
+            email: AlunoModel.normalizarTexto(dados.email).toLocaleLowerCase(),
 
-        const ids = alunos.map(
-            aluno => aluno.id
-        );
+            curso: AlunoModel.normalizarTexto(dados.curso),
+            turma: AlunoModel.normalizarTexto(dados.turma)
+        };
 
-        const maiorId = Math.max(...ids);
-        return maiorId + 1;
-    },
-
-    criar(dados, alunos){
-        const ra = AlunoModel.normalizarTexto(dados.ra);
-        const nome = AlunoModel.normalizarTexto(dados.nome);
-        const email = AlunoModel.normalizarTexto(dados.email);
-        const curso = AlunoModel.normalizarTexto(dados.curso);
-        const turma = AlunoModel.normalizarTexto(dados.turma);
-
-        if(
-            ra === "" ||
-            nome === "" || 
-            email === "" || 
-            curso === "" || 
-            turma === ""
+         if(
+            aluno.ra === "" ||
+            aluno.nome === "" || 
+            aluno.email === "" || 
+            aluno.curso === "" || 
+            aluno.turma === ""
         ){
             return{
                 sucesso: false,
@@ -49,41 +34,76 @@ const AlunoModel = {
             };
         }
 
-        if(!AlunoModel.validarEmail(email)){
+        if(!AlunoModel.validarEmail(aluno.email)){
             return{
                 sucesso: false,
                 mensagem: "Informe um e-mail válido."
             };
         }
 
-        if(AlunoModel.localizarPorRa(alunos, ra)){
-            return{
-                sucesso: false,
-                mensagem: "Já existe um aluno com esse RA."
-            };
-        }
-
-        const aluno = {
-            id: AlunoModel.gerarProximoId(alunos),
-            ra: ra,
-            nome: nome,
-            email: email,
-            curso: curso,
-            turma: turma,
-            ativo: true
+        return {
+            sucesso: true,
+            dados: aluno
         };
 
-        return{
-            sucesso: true,
-            aluno: aluno
-        }
+
+    },
+
+    // localizarPorRa(alunos, ra){
+    //     return alunos.find(
+    //         aluno => aluno.ra === ra
+    //     );
+    // },
+
+    // gerarProximoId(alunos){
+    //     if(alunos.length === 0){
+    //         return 1;
+    //     }
+
+    //     const ids = alunos.map(
+    //         aluno => aluno.id
+    //     );
+
+    //     const maiorId = Math.max(...ids);
+    //     return maiorId + 1;
+    // },
+
+    // criar(dados, alunos){
+    //     const ra = AlunoModel.normalizarTexto(dados.ra);
+    //     const nome = AlunoModel.normalizarTexto(dados.nome);
+    //     const email = AlunoModel.normalizarTexto(dados.email);
+    //     const curso = AlunoModel.normalizarTexto(dados.curso);
+    //     const turma = AlunoModel.normalizarTexto(dados.turma);
+
+       
+    //     if(AlunoModel.localizarPorRa(alunos, ra)){
+    //         return{
+    //             sucesso: false,
+    //             mensagem: "Já existe um aluno com esse RA."
+    //         };
+    //     }
+
+    //     const aluno = {
+    //         id: AlunoModel.gerarProximoId(alunos),
+    //         ra: ra,
+    //         nome: nome,
+    //         email: email,
+    //         curso: curso,
+    //         turma: turma,
+    //         ativo: true
+    //     };
+
+    //     return{
+    //         sucesso: true,
+    //         aluno: aluno
+    //     }
     
     
     
     
     
     
-    }
+    // }
 
 
 
